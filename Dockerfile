@@ -6,8 +6,8 @@ FROM balenalib/armv7hf-alpine-golang as tools
 #enable building ARM container on x86 machinery on the web (comment out next line if built on Raspberry)
 RUN [ "cross-build-start" ]
 
-ENV TOOLS_VERSION 0.4.1
-ENV PG_VERSION 9.6
+#ENV TOOLS_VERSION 0.4.1
+#ENV PG_VERSION 9.6
 
 RUN apk update && apk add --no-cache git \
     && mkdir -p ${GOPATH}/src/github.com/timescale/ \
@@ -26,11 +26,11 @@ RUN apk update && apk add --no-cache git \
 #################################################
 # Now build image and copy in tools
 #################################################
-FROM postgres:${PG_VERSION}-alpine
+FROM postgres:9.6-alpine
 
 MAINTAINER Timescale https://www.timescale.com
 
-ENV TIMESCALEDB_VERSION 1.2.1
+#ENV TIMESCALEDB_VERSION 1.2.1
 
 COPY --from=tools /go/bin/* /usr/local/bin/
 
@@ -54,7 +54,7 @@ RUN set -ex \
                 util-linux-dev \
     \
     && cd /build/timescaledb && rm -fr build \
-    && git checkout ${TIMESCALEDB_VERSION} \
+    && git checkout 1.2.1 \
     && ./bootstrap -DPROJECT_INSTALL_METHOD="docker" \
     && cd build && make install \
     && cd ~ \
