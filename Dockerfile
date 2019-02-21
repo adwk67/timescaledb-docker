@@ -8,6 +8,7 @@ FROM balenalib/armv7hf-alpine-golang as tools
 RUN [ "cross-build-start" ]
 
 ENV TOOLS_VERSION 0.4.1
+ENV PG_VERSION 9.6
 
 RUN apk update && apk add --no-cache git \
     && mkdir -p ${GOPATH}/src/github.com/timescale/ \
@@ -26,9 +27,7 @@ RUN apk update && apk add --no-cache git \
 #################################################
 # Now build image and copy in tools
 #################################################
-ARG PG_VERSION
 FROM postgres:${PG_VERSION}-alpine
-ARG OSS_ONLY
 
 MAINTAINER Timescale https://www.timescale.com
 
@@ -57,7 +56,7 @@ RUN set -ex \
     \
     && cd /build/timescaledb && rm -fr build \
     && git checkout ${TIMESCALEDB_VERSION} \
-    && ./bootstrap -DPROJECT_INSTALL_METHOD="docker"${OSS_ONLY} \
+    && ./bootstrap -DPROJECT_INSTALL_METHOD="docker" \
     && cd build && make install \
     && cd ~ \
     \
