@@ -4,6 +4,9 @@ ARG PG_VERSION
 #################################################
 FROM balenalib/armv7hf-alpine-golang as tools
 
+#enable building ARM container on x86 machinery on the web (comment out next line if built on Raspberry)
+RUN [ "cross-build-start" ]
+
 ENV TOOLS_VERSION 0.4.1
 
 RUN apk update && apk add --no-cache git \
@@ -61,3 +64,6 @@ RUN set -ex \
     && apk del .fetch-deps .build-deps \
     && rm -rf /build \
     && sed -r -i "s/[#]*\s*(shared_preload_libraries)\s*=\s*'(.*)'/\1 = 'timescaledb,\2'/;s/,'/'/" /usr/local/share/postgresql/postgresql.conf.sample
+
+    #stop processing ARM emulation (comment out next line if built on Raspberry)
+RUN [ "cross-build-end" ]
